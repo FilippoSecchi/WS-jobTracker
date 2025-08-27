@@ -11,6 +11,7 @@ export default async function ProtectedPage() {
   if (error || !data?.claims) {
     redirect("/auth/login");
   }
+  //console.log("User claims:", data.claims);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
