@@ -18,7 +18,7 @@ export function SidebarHeader({ isCollapsed, companyName, companyLogo }: Sidebar
             {companyLogo}
           </div>
         ) : (
-          <h2 className="text-xl font-bold text-foreground">{companyName}</h2>
+          <h2 className="mt-1 text-xl font-bold text-foreground">{companyName}</h2>
         )}
       </div>
     </div>

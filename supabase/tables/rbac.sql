@@ -1,0 +1,181 @@
+-- Estensione per UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+-- Tabella profili utente (estende auth.users)
+CREATE TABLE user_profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  first_name TEXT,
+  last_name TEXT,
+  is_active BOOLEAN DEFAULT false,
+  role_id
+  email TEXT UNIQUE NOT NULL,
+  email_verified BOOLEAN DEFAULT false,
+  phone TEXT,
+  phone_verified BOOLEAN DEFAULT false,
+  wa_active BOOLEAN DEFAULT false,
+  wa_same_as_phone BOOLEAN DEFAULT true,
+  wa_number TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+);
+
+-- Tabella dettagli worker
+CREATE TABLE worker_details (
+  id UUID PRIMARY KEY REFERENCES user_profiles(id) ON DELETE CASCADE,
+  cod_fisc TEXT UNIQUE,
+  sex TEXT,
+  dob DATE,
+  born_country_id BIGINT,
+  born_region_id BIGINT,
+  born_province_id BIGINT,
+  born_city TEXT,
+  born_postal_code TEXT,
+  eu_citizen BOOLEAN DEFAULT true
+  res_country_id BIGINT,
+  res_region_id BIGINT,
+  res_province_id BIGINT,
+  res_city TEXT,
+  res_street TEXT,
+  res_street_number TEXT,
+  res_postal_code TEXT, 
+  dom_same_as_res BOOLEAN DEFAULT true,
+  dom_country_id BIGINT,
+  dom_region_id BIGINT,
+  dom_province_id BIGINT,
+  dom_city TEXT,
+  dom_street TEXT,
+  dom_street_number TEXT,
+  dom_postal_code TEXT, 
+  driving_license BOOLEAN DEFAULT false,
+  vehicle_ownership BOOLEAN DEFAULT false,
+  vehicle_type TEXT,
+  vehicle_plate TEXT,
+  vehicle_insurance BOOLEAN DEFAULT false,
+  vehicle_insurance_exp DATE,
+  vehical_seat_count INT,
+  vehicle_cargo_capacity DECIMAL(10,2),
+  transfer_availability BOOLEAN DEFAULT false,
+  overnight_availability BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella ruoli dell'applicazione
+CREATE TABLE app_roles (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL CHECK (name IN ('master', 'admin', 'staff', 'client', 'worker', 'candidate')),
+  display_name TEXT NOT NULL,
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella permessi dell'applicazione
+CREATE TABLE app_permissions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL,
+  resource TEXT NOT NULL, -- es: 'users', 'clients', 'services'
+  action TEXT NOT NULL CHECK (action IN ('create', 'read', 'update', 'delete', 'manage')),
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella associazione utente-ruolo
+CREATE TABLE user_roles (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
+  assigned_by UUID REFERENCES user_profiles(id),
+  assigned_at TIMESTAMPTZ DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT true,
+  UNIQUE(user_id, role_id)
+);
+
+-- Tabella permessi specifici per utente (override dei permessi di ruolo)
+CREATE TABLE user_permissions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  permission_id UUID REFERENCES app_permissions(id) ON DELETE CASCADE,
+  granted BOOLEAN NOT NULL, -- true = concesso, false = revocato
+  granted_by UUID REFERENCES user_profiles(id),
+  granted_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, permission_id)
+);
+
+-- Tabella permessi per ruolo
+CREATE TABLE role_permissions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
+  permission_id UUID REFERENCES app_permissions(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(role_id, permission_id)
+);
+
+-- Configurazioni utente
+CREATE TABLE user_configurations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  config_key TEXT NOT NULL,
+  config_value JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, config_key)
+);
+
+-- Profili clienti aziendali
+CREATE TABLE client_profiles (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  company_name TEXT NOT NULL,
+  vat_number TEXT UNIQUE,
+  contact_email TEXT,
+  contact_phone TEXT,
+  address TEXT,
+  city TEXT,
+  postal_code TEXT,
+  country TEXT DEFAULT 'IT',
+  is_active BOOLEAN DEFAULT true,
+  created_by UUID REFERENCES user_profiles(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Sedi clienti
+CREATE TABLE client_locations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  client_id UUID REFERENCES client_profiles(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  address TEXT NOT NULL,
+  city TEXT NOT NULL,
+  postal_code TEXT,
+  contact_person TEXT,
+  contact_phone TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tariffe clienti
+CREATE TABLE client_fees (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  client_id UUID REFERENCES client_profiles(id) ON DELETE CASCADE,
+  service_type TEXT NOT NULL,
+  hourly_rate DECIMAL(10,2),
+  fixed_rate DECIMAL(10,2),
+  currency TEXT DEFAULT 'EUR',
+  valid_from DATE NOT NULL,
+  valid_to DATE,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Servizi
+CREATE TABLE services (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  default_rate DECIMAL(10,2),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

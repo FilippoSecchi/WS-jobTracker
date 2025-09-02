@@ -1,10 +1,11 @@
+// lib/supabase/middleware.ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
-    request,
+    request, 
   });
 
   // If the env vars are not set, skip middleware check. You can remove this
@@ -46,6 +47,22 @@ export async function updateSession(request: NextRequest) {
   // with the Supabase client, your users may be randomly logged out.
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
+
+  // Recupero dati utente da claims e query a DB per RBAC
+const userId = data?.claims['sub'];  
+console.log("User ID:", userId);
+
+// Query a tabella 'user_profiles' con RBAC basato su claims
+const { data: profile, error: profileError } = await supabase
+  .from('user_profiles')
+  .select('user_role')
+  .eq('id', userId)
+  .single();
+if (profileError) {
+  console.error("Error fetching profile:", profileError);
+} else {
+  console.log("User profile:", profile);
+}  
 
   if (
     request.nextUrl.pathname !== "/" &&

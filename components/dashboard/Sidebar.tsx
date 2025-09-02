@@ -10,7 +10,14 @@ import {
   FileText,
   Calendar,
   HelpCircle,
-  MessageSquare,
+  Cog,
+  Headset,
+  Code,
+  FilePen,
+  Clock,
+  UserCog,
+  Handshake,
+  UserLock,
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -26,9 +33,34 @@ const mainNavItems: MenuItem[] = [
     icon: Home,
   },
   {
-    title: 'Utenti',
-    href: '/dashboard/users',
+    title: 'Statistiche',
+    href: '/dashboard/analytics',
+    icon: BarChart3,
+  },
+  {
+    title: 'test',
+    href: '/dashboard/test',
+    icon: Code,
+  },
+  {
+    title: 'Collaboratori',
+    href: '/dashboard/staff',
+    icon: UserCog,
+  },
+  {
+    title: 'Candidati',
+    href: '/dashboard/candidates',
+    icon: UserLock,
+  },
+  {
+    title: 'Workers',
+    href: '/dashboard/workers',
     icon: Users,
+  },
+  {
+    title: 'Clienti',
+    href: '/dashboard/customers',
+    icon: Handshake,
   },
   {
     title: 'Servizi',
@@ -36,32 +68,42 @@ const mainNavItems: MenuItem[] = [
     icon: FileText,
   },
   {
-    title: 'Analytics',
-    href: '/dashboard/analytics',
-    icon: BarChart3,
+    title: 'Ore lavorate',
+    href: '/dashboard/worked-hours',
+    icon: Clock,
   },
   {
     title: 'Calendario',
     href: '/dashboard/calendar',
     icon: Calendar,
   },
+  {
+    title: 'Quiz',
+    href: '/dashboard/quiz',
+    icon: FilePen,
+  },
 ]
 
 const bottomNavItems: MenuItem[] = [
   {
-    title: 'Supporto',
-    href: '/dashboard/support',
-    icon: HelpCircle,
-  },
-  {
-    title: 'Aiuto',
-    href: '/dashboard/help',
-    icon: MessageSquare,
-  },
-  {
     title: 'Impostazioni',
     href: '/dashboard/settings',
     icon: Settings,
+  },
+  {
+    title: 'Configurazioni',
+    href: '/dashboard/configurations',
+    icon: Cog,
+  },
+  {
+    title: 'Supporto',
+    href: '/dashboard/support',
+    icon: Headset,
+  },
+  {
+    title: 'Help Center',
+    href: '/dashboard/help',
+    icon: HelpCircle,
   },
 ]
 

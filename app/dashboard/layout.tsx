@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Navbar } from '@/components/dashboard/Navbar'
 import { UserProfile } from '@/components/dashboard/NavbarProfile'
@@ -11,15 +13,12 @@ interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+export default function DashboardLayout({ children }: DashboardLayoutProps) {  
+  const router = useRouter();
+  const supabase = createClient()
 
-  // Mock data - sostituisci con i dati reali da Supabase
-  const user: UserProfile = {
-    name: 'Mario Rossi',
-    email: 'mario.rossi@example.com',
-    avatar: '/placeholder-avatar.jpg'
-  }
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [user, setUser] = useState<UserProfile | null>(null)
 
   const notifications: Notification[] = [
     { id: 1, message: 'Nuovo messaggio da cliente', time: '5 min fa' },
@@ -31,9 +30,53 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { id: 2, from: 'Team Dev', message: 'Review codice completata', time: '30 min fa' },
   ]
 
-  const handleLogout = () => {
-    // Implementa qui la logica di logout con Supabase
-    console.log('Logout user')
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: user,
+        error,
+      } = await supabase.auth.getClaims()
+
+      if (error) {
+        console.error('Errore recupero user:', error.message)
+        return
+      }
+
+      console.log('Utente autenticato:', user)
+
+      if (user) {
+        setUser({
+          name: user.claims?.full_name || user.claims.email?.split('@')[0] || 'Utente',
+          email: user.claims.email || '',
+          avatar: user.claims?.avatar_url || '/placeholder-avatar.jpg',
+        })
+      }
+    }
+
+    getUser()
+
+    // opzionale: listener per login/logout
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Utente',
+          email: session.user.email || '',
+          avatar: session.user.user_metadata?.avatar_url || '/placeholder-avatar.jpg',
+        })
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
+  }, [supabase])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    router.push("/auth/login");
   }
 
   const toggleSidebar = () => {
@@ -55,7 +98,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Navbar
           isCollapsed={sidebarCollapsed}
           onToggleSidebar={toggleSidebar}
-          user={user}
+          user={user ?? { name: '', email: '', avatar: '/placeholder-avatar.jpg' }}
           messages={messages}
           notifications={notifications}
           onLogout={handleLogout}
