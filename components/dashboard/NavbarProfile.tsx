@@ -10,9 +10,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { User, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
+import { getInitials } from '@/lib/utils'
 
 export interface UserProfile {
-  name: string
+  first_name: string
+  last_name: string
+  name?: string
   email: string
   avatar?: string
 }
@@ -32,16 +35,28 @@ export function NavbarProfile({ user, onLogout }: NavbarProfileProps) {
     }
   }
 
+  console.log("Rendering NavbarProfile with user:", user)
+  const avatar = user.avatar || ''
+  const name = `${user.first_name} ${user.last_name}`.trim() || user.email
+  user = { ...user, name } // Aggiungo il campo name per comodità
+  const first_name = user.first_name || ''
+  const last_name = user.last_name || ''
+  let avatarFallBacK = ''
+  if (!avatar) {
+    avatarFallBacK = getInitials(first_name, last_name)
+  }
+  console.log("Avatar:", avatar)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center space-x-2 px-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={avatar} alt={name} />
+            <AvatarFallback>{avatarFallBacK}</AvatarFallback>
           </Avatar>
           <span className="hidden md:block text-sm font-medium">
-            {user.name}
+            {name}
           </span>
         </Button>
       </DropdownMenuTrigger>

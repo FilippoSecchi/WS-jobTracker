@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from "next/navigation";
+import { ThemeProvider } from "next-themes";
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Navbar } from '@/components/dashboard/Navbar'
@@ -31,47 +32,46 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: user,
-        error,
-      } = await supabase.auth.getClaims()
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (session?.user) {
+          const userId = session.user.id
+          /* console.log("Utente autenticato:", userId) */
 
-      if (error) {
-        console.error('Errore recupero user:', error.message)
-        return
+          // recupero profilo da user_profiles
+          const { data: userProfileData, error: userProfileError } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', userId)
+            .single()
+
+          if (userProfileError) {
+            console.error('Errore recupero profilo utente:', userProfileError.message)
+            return
+          }
+
+          if (userProfileData) {
+            const avatar = userProfileData.avatar_url || ''
+
+            setUser({
+              first_name: userProfileData.first_name || '',
+              last_name: userProfileData.last_name || '',
+              email: userProfileData.email,
+              avatar,
+            })
+          }
+        } else {
+          console.log("Utente non autenticato")
+          router.push("/auth/login")
+          setUser(null)
+        }
       }
-
-      console.log('Utente autenticato:', user)
-
-      if (user) {
-        setUser({
-          name: user.claims?.full_name || user.claims.email?.split('@')[0] || 'Utente',
-          email: user.claims.email || '',
-          avatar: user.claims?.avatar_url || '/placeholder-avatar.jpg',
-        })
-      }
-    }
-
-    getUser()
-
-    // opzionale: listener per login/logout
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Utente',
-          email: session.user.email || '',
-          avatar: session.user.user_metadata?.avatar_url || '/placeholder-avatar.jpg',
-        })
-      } else {
-        setUser(null)
-      }
-    })
+    )
 
     return () => {
       authListener.subscription.unsubscribe()
     }
-  }, [supabase])
+  }, [router, supabase])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -84,31 +84,38 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="h-screen flex bg-background">
-      {/* Sidebar */}
-      <Sidebar
-        isCollapsed={sidebarCollapsed}
-        companyName="MyCompany"
-        companyLogo="MC"
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Navbar */}
-        <Navbar
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="h-screen flex bg-background">
+        {/* Sidebar */}
+        <Sidebar
           isCollapsed={sidebarCollapsed}
-          onToggleSidebar={toggleSidebar}
-          user={user ?? { name: '', email: '', avatar: '/placeholder-avatar.jpg' }}
-          messages={messages}
-          notifications={notifications}
-          onLogout={handleLogout}
+          companyName="WS Job Tracker"
+          companyLogo="WS"
         />
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6 bg-background">
-          {children}
-        </main>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Top Navbar */}
+          <Navbar
+            isCollapsed={sidebarCollapsed}
+            onToggleSidebar={toggleSidebar}
+            user={user ?? { first_name: '', last_name: '', email: '', avatar: '' }}
+            messages={messages}
+            notifications={notifications}
+            onLogout={handleLogout}
+          />
+
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto p-6 bg-background">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   )
 }

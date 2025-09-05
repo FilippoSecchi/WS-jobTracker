@@ -33,13 +33,34 @@ export function LoginForm({
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/dashboard");
+      const { data: loginData, error: loginError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+      if (loginError) throw loginError;
+
+      // ✅ Recupero il profilo utente
+      const userId = loginData.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const { data: profile, error: profileError } = await supabase
+        .from("user_profiles")
+        .select("first_name, last_name, is_onboarded")
+        .eq("id", userId)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // ✅ Decidi redirect in base a is_onboarded
+      if (!profile?.is_onboarded) {
+        console.log("Redirecting to onboarding...");
+        router.push("/onboarding");
+      } else {
+        console.log("Redirecting to dashboard...");
+        router.push("/dashboard");
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

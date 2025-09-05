@@ -3,13 +3,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 -- Tabella profili utente (estende auth.users)
-CREATE TABLE user_profiles (
-  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS  user_profiles (
+  id UUID  PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
   first_name TEXT,
   last_name TEXT,
   is_active BOOLEAN DEFAULT false,
-  role_id
-  email TEXT UNIQUE NOT NULL,
+  email TEXT NOT NULL,
   email_verified BOOLEAN DEFAULT false,
   phone TEXT,
   phone_verified BOOLEAN DEFAULT false,
@@ -18,8 +17,70 @@ CREATE TABLE user_profiles (
   wa_number TEXT,
   avatar_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Inizio tabelle RBAC
+
+-- Tabella ruoli dell'applicazione
+CREATE TABLE IF NOT EXISTS  app_roles (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL, -- es: 'admin', 'manager', 'worker'
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella risorse dell'applicazione
+CREATE TABLE IF NOT EXISTS  app_resources (
+  id bigint generated always as identity PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL, -- es: 'clients', 'services', 'teams'
+  description TEXT,
+  code TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella azioni dell'applicazione
+CREATE TABLE IF NOT EXISTS  app_actions (
+  id bigint generated always as identity PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL, -- es: 'create', 'read', 'update', 'delete'
+  description TEXT,
+  code TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella scopes dell'applicazione
+CREATE TABLE IF NOT EXISTS  app_scopes (
+  id bigint generated always as identity PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL, -- es: 'own', 'team', 'all'
+  description TEXT, 
+  code TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella permessi per ruolo
+CREATE TABLE IF NOT EXISTS  role_access (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
+  resource_id bigint REFERENCES app_resources(id) ON DELETE CASCADE,
+  action_id bigint REFERENCES app_actions(id) ON DELETE CASCADE,
+  scope_id bigint REFERENCES app_scopes(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(role_id, resource_id, action_id, scope_id)
+);
+
+-- Tabella associazione utente-ruolo
+CREATE TABLE IF NOT EXISTS  user_roles (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
+  assigned_by UUID REFERENCES user_profiles(id),
+  assigned_at TIMESTAMPTZ DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT true,
+  UNIQUE(user_id, role_id)
+);
+
+-- Fine tabelle RBAC
 
 -- Tabella dettagli worker
 CREATE TABLE worker_details (
@@ -60,57 +121,6 @@ CREATE TABLE worker_details (
   overnight_availability BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Tabella ruoli dell'applicazione
-CREATE TABLE app_roles (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name TEXT UNIQUE NOT NULL CHECK (name IN ('master', 'admin', 'staff', 'client', 'worker', 'candidate')),
-  display_name TEXT NOT NULL,
-  description TEXT,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Tabella permessi dell'applicazione
-CREATE TABLE app_permissions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name TEXT UNIQUE NOT NULL,
-  resource TEXT NOT NULL, -- es: 'users', 'clients', 'services'
-  action TEXT NOT NULL CHECK (action IN ('create', 'read', 'update', 'delete', 'manage')),
-  description TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Tabella associazione utente-ruolo
-CREATE TABLE user_roles (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
-  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
-  assigned_by UUID REFERENCES user_profiles(id),
-  assigned_at TIMESTAMPTZ DEFAULT NOW(),
-  is_active BOOLEAN DEFAULT true,
-  UNIQUE(user_id, role_id)
-);
-
--- Tabella permessi specifici per utente (override dei permessi di ruolo)
-CREATE TABLE user_permissions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
-  permission_id UUID REFERENCES app_permissions(id) ON DELETE CASCADE,
-  granted BOOLEAN NOT NULL, -- true = concesso, false = revocato
-  granted_by UUID REFERENCES user_profiles(id),
-  granted_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, permission_id)
-);
-
--- Tabella permessi per ruolo
-CREATE TABLE role_permissions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  role_id UUID REFERENCES app_roles(id) ON DELETE CASCADE,
-  permission_id UUID REFERENCES app_permissions(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(role_id, permission_id)
 );
 
 -- Configurazioni utente

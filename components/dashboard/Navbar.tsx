@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { NavbarMessages, Message } from './NavbarMessages'
 import { NavbarNotifications, Notification } from './NavbarNotifications'
 import { NavbarProfile, UserProfile } from './NavbarProfile'
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 interface NavbarProps {
   isCollapsed: boolean
@@ -40,6 +41,7 @@ export function Navbar({
 
       {/* Right side - Notifications, Messages, Profile */}
       <div className="flex items-center space-x-4">
+        <ThemeSwitcher />
         <NavbarMessages messages={messages} />
         <NavbarNotifications notifications={notifications} />
         <NavbarProfile user={user} onLogout={onLogout} />

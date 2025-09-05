@@ -13,9 +13,9 @@ import {
   ArrowUpRight,
   ArrowDownRight, UserPlus, Headset
 } from 'lucide-react'
-import Header from '@/components/dashboard/pages/Header'
+import Header from '@/components/dashboard/pages/ui/Header'
 import Link from 'next/link'
-import PageBreadcrumb from '@/components/dashboard/pages/PageBreadcrumb';
+import PageBreadcrumb from '@/components/dashboard/pages/ui/PageBreadcrumb';
 
 export default function DashboardPage() {
   const [dialogOpen, setDialogOpen] = useState(false);

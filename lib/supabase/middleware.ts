@@ -1,11 +1,10 @@
-// lib/supabase/middleware.ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
-    request, 
+    request,
   });
 
   // If the env vars are not set, skip middleware check. You can remove this
@@ -48,21 +47,30 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  // Recupero dati utente da claims e query a DB per RBAC
-const userId = data?.claims['sub'];  
-console.log("User ID:", userId);
+  /* console.log("User in middleware:", user); */
 
-// Query a tabella 'user_profiles' con RBAC basato su claims
-const { data: profile, error: profileError } = await supabase
-  .from('user_profiles')
-  .select('user_role')
-  .eq('id', userId)
-  .single();
-if (profileError) {
-  console.error("Error fetching profile:", profileError);
-} else {
-  console.log("User profile:", profile);
-}  
+  // If you need to make any changes to the response, do so on the
+  // supabaseResponse object. Do not create a new response object.
+  // If you create a new response object, you will break the auth
+  // flow and your users will be logged out.
+  
+  // Example: redirecting the user to login if not authenticated
+
+  // Recupero dati utente da claims e query a DB per RBAC
+  /* const userId = data?.claims['sub'];  
+  console.log("User ID:", userId); */
+  
+  // Query a tabella 'user_profiles' con RBAC basato su claims
+/*   const { data: profile, error: profileError } = await supabase
+    .from('user_profiles')
+    .select('user_role')
+    .eq('id', userId)
+    .single();
+  if (profileError) {
+    console.error("Error fetching profile:", profileError);
+  } else {
+    console.log("User profile:", profile);
+  }   */
 
   if (
     request.nextUrl.pathname !== "/" &&
