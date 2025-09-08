@@ -34,7 +34,7 @@ const Select = dynamic(() => import('react-select'), { ssr: false }) as typeof i
 
 export default function AddressFormSelect() {
   const [countries, setCountries] = useState<Country[]>([]);
-  const [regioni, setRegioni] = useState<Regione[]>([]);
+  const [regioni, setRegioni] = useState<Regione[]>([]); 
   const [province, setProvince] = useState<Provincia[]>([]);
 
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
@@ -64,28 +64,28 @@ export default function AddressFormSelect() {
 
   return (
     <form className="space-y-4">
-            <div className="flex flex-col gap-6">
-      {/* COUNTRY */}
-              <div className="grid gap-2">        
-                <Label htmlFor="country">Paese</Label>
-        <Select<OptionType, false>
-                  id="country"
-          options={countryOptions}
-          value={selectedCountry ? { value: selectedCountry.id, label: `${selectedCountry.name_it} (${selectedCountry.name_en})` } : null}
-          onChange={(option) => {
-            const country = countries.find(c => c.id === option?.value) || null;
-            setSelectedCountry(country);
-            setSelectedRegione(null);
-            setSelectedProvincia(null);
-          }}
-          isClearable
-        />
-      </div>
+      <div className="flex flex-col gap-6">
+        {/* COUNTRY */}
+        <div className="grid gap-2">        
+          <Label htmlFor="country">Paese</Label>
+          <Select<OptionType, false>
+            id="country"
+            options={countryOptions}
+            value={selectedCountry ? { value: selectedCountry.id, label: `${selectedCountry.name_it} (${selectedCountry.name_en})` } : null}
+            onChange={(option) => {
+              const country = countries.find(c => c.id === option?.value) || null;
+              setSelectedCountry(country);
+              setSelectedRegione(null);
+              setSelectedProvincia(null);
+            }}
+            isClearable
+          />
+        </div>
 
       {/* REGIONI */}
       {selectedCountry && selectedCountry.code === 'IT' && (
-              <div className="grid gap-2">
-                <Label htmlFor="regione">Regione</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="regione">Regione</Label>
           <Select<OptionType, false>
             id="regione"
             options={regioneOptions}
@@ -102,8 +102,8 @@ export default function AddressFormSelect() {
 
       {/* PROVINCE */}
       {selectedRegione && (
-              <div className="grid gap-2">
-                <Label htmlFor="regione">Provincia</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="regione">Provincia</Label>
           <Select<OptionType, false>
             id="provincia"
             options={provinciaOptions}

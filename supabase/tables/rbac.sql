@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS  user_roles (
 
 -- Fine tabelle RBAC
 
--- Tabella dettagli worker
-CREATE TABLE worker_details (
+-- Tabella dettagli user
+CREATE TABLE user_details (
   id UUID PRIMARY KEY REFERENCES user_profiles(id) ON DELETE CASCADE,
   cod_fisc TEXT UNIQUE,
   sex TEXT,
@@ -93,7 +93,8 @@ CREATE TABLE worker_details (
   born_province_id BIGINT,
   born_city TEXT,
   born_postal_code TEXT,
-  eu_citizen BOOLEAN DEFAULT true
+  eu_citizen BOOLEAN DEFAULT true,
+  perm_sogg BOOLEAN DEFAULT false,
   res_country_id BIGINT,
   res_region_id BIGINT,
   res_province_id BIGINT,
@@ -119,6 +120,40 @@ CREATE TABLE worker_details (
   vehicle_cargo_capacity DECIMAL(10,2),
   transfer_availability BOOLEAN DEFAULT false,
   overnight_availability BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella dettagli documenti user
+CREATE TABLE user_documents (
+  id bigint generated always as identity primary key
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  doc_type TEXT,
+  doc_number TEXT,
+  doc_emitted_by TEXT,
+  doc_emission_date DATE,
+  doc_expiration_date DATE,
+  doc_url TEXT,
+  doc_is_valid BOOLEAN DEFAULT false,
+  doc_is_confirmed BOOLEAN DEFAULT false,
+  doc_request_new BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabella dettagli numeri di telefono user
+CREATE TABLE user_phones (
+  id bigint generated always as identity primary key
+  user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  doc_type TEXT,
+  doc_number TEXT,
+  doc_emitted_by TEXT,
+  doc_emission_date DATE,
+  doc_expiration_date DATE,
+  doc_url TEXT,
+  doc_is_valid BOOLEAN DEFAULT false,
+  doc_is_confirmed BOOLEAN DEFAULT false,
+  doc_request_new BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
