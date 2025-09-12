@@ -17,7 +17,7 @@ interface PageTabsProps {
   onTabChange?: (tab: string) => void;
 }
 
-export default function PageTabs({
+export default function PageInnerTabs({
   tabs,
   defaultTab,
   onTabChange,
@@ -41,39 +41,11 @@ export default function PageTabs({
   };
 
   // Dynamically determine grid columns based on tabs count
-  const getGridClass = () => {
-    switch (tabs.length) {
-      case 1:
-        return 'grid-cols-1';
-      case 2:
-        return 'grid-cols-2';
-      case 3:
-        return 'grid-cols-3';
-      case 4:
-        return 'grid-cols-4';
-      case 5:
-        return 'grid-cols-5';
-      case 6:
-        return 'grid-cols-6';
-      case 7:
-        return 'grid-cols-7';
-      case 8:
-        return 'grid-cols-8';
-      case 8:
-        return 'grid-cols-8';
-      case 9:
-        return 'grid-cols-9';
-      case 10:
-        return 'grid-cols-10';
-      case 11:
-        return 'grid-cols-11';
-      case 12:
-        return 'grid-cols-12';
-      default:
-        return 'grid-cols-4';
-    }
-  };
 
+  const getGridClass = () => {
+    //const length = tabs.length;
+    return `w-full`;
+  };
 
   return (
     <Tabs

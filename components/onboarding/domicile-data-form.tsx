@@ -26,6 +26,7 @@ import { createClient } from "@/lib/supabase/client";
 import CountrySelect from "../shared/form/CountrySelect";
 import RegioneSelect from "../shared/form/RegioniItaSelect";
 import ProvinciaSelect from "../shared/form/ProvinceItaSelect";
+import MultipleUpload from "../shared/form/MultiUpload";
 
 const ITALY_ID = "82";
 
@@ -48,6 +49,9 @@ const domicileDataSchema = z.object({
   dom_street: z.string().nullable(),
   dom_street_number: z.string().nullable(),
   dom_postal_code: z.string().nullable(),
+
+  // Upload documenti
+  multipleFiles: z.any().optional(),
 });
 
 type DomicileDataFormValues = z.infer<typeof domicileDataSchema>;
@@ -97,6 +101,8 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
         dom_street_number: values.dom_same_as_res ? null : values.dom_street_number,
         dom_postal_code: values.dom_same_as_res ? null : values.dom_postal_code,
 
+        multipleFiles: values.multipleFiles ? values.multipleFiles : null,
+
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
@@ -110,6 +116,7 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
   const resRegion = form.watch("res_region_id");
   const domCountry = form.watch("dom_country_id");
   const domRegion = form.watch("dom_region_id");
+
 
   return (
     <Card className={className}>
@@ -129,10 +136,12 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                 name="res_country_id"
                 render={({ field }) => (
                   <FormItem>
+                  <div className="w-full">
                     <FormLabel>Nazione *</FormLabel>
                     <FormControl>
                       <CountrySelect value={field.value ?? ""} onChange={field.onChange} />
                     </FormControl>
+                        </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -144,10 +153,12 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                   name="res_region_id"
                   render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>Regione *</FormLabel>
                       <FormControl>
                         <RegioneSelect value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
+                        </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -160,6 +171,7 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                   name="res_province_id"
                   render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>Provincia *</FormLabel>
                       <FormControl>
                         <ProvinciaSelect
@@ -168,6 +180,7 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                           regioneId={resRegion} // 🔑 aggiunto filtro province
                         />
                       </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -179,32 +192,40 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <FormField name="res_city" control={form.control} render={({ field }) => (
                 <FormItem>
+                <div className="w-full">
                   <FormLabel>Città</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
+                     </div>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField name="res_postal_code" control={form.control} render={({ field }) => (
                 <FormItem>
+                <div className="w-full">
                   <FormLabel>CAP</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField name="res_street" control={form.control} render={({ field }) => (
                 <FormItem>
+                <div className="w-full">
                   <FormLabel>Via</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
+                    </div>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField name="res_street_number" control={form.control} render={({ field }) => (
                 <FormItem>
+                <div className="w-full">
                   <FormLabel>Numero</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
+                    </div>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -233,10 +254,12 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                     name="dom_country_id"
                     render={({ field }) => (
                       <FormItem>
+                      <div className="w-full">
                         <FormLabel>Nazione *</FormLabel>
                         <FormControl>
                           <CountrySelect value={field.value ?? ""} onChange={field.onChange} />
                         </FormControl>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -248,10 +271,12 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                       name="dom_region_id"
                       render={({ field }) => (
                         <FormItem>
+                        <div className="w-full">
                           <FormLabel>Regione *</FormLabel>
                           <FormControl>
                             <RegioneSelect value={field.value ?? ""} onChange={field.onChange} />
                           </FormControl>
+                            </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -264,6 +289,7 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                       name="dom_province_id"
                       render={({ field }) => (
                         <FormItem>
+                        <div className="w-full">
                           <FormLabel>Provincia *</FormLabel>
                           <FormControl>
                             <ProvinciaSelect
@@ -272,6 +298,7 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                               regioneId={domRegion} // 🔑 filtro province
                             />
                           </FormControl>
+                            </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -282,38 +309,62 @@ export default function DomicileDataForm({ userId, className }: DomicileDataForm
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                   <FormField name="dom_city" control={form.control} render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>Città</FormLabel>
                       <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                        </div>
                       <FormMessage />
                     </FormItem>
                   )} />
 
                   <FormField name="dom_postal_code" control={form.control} render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>CAP</FormLabel>
                       <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                        </div>
                       <FormMessage />
                     </FormItem>
                   )} />
 
                   <FormField name="dom_street" control={form.control} render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>Via</FormLabel>
                       <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                        </div>
                       <FormMessage />
                     </FormItem>
                   )} />
 
                   <FormField name="dom_street_number" control={form.control} render={({ field }) => (
                     <FormItem>
+                    <div className="w-full">
                       <FormLabel>Numero</FormLabel>
                       <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                        </div>
                       <FormMessage />
                     </FormItem>
                   )} />
-                </div>
+                </div> 
+
               </>
             )}
+            
+            {/* Upload documenti */}
+            <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">     
+                <FormField name="multipleFiles" control={form.control} render={({ field }) => (
+                    <FormItem>
+                    <div className="w-full">     
+                        <FormControl>
+                            <MultipleUpload value={field.value ?? []} onChange={field.onChange} />
+                        </FormControl>
+                    </div>
+                <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            
 
             <Button type="submit" className="w-full">Continua</Button>
           </form>

@@ -1,6 +1,10 @@
+// components/sidebar/SidebarMenu.tsx
+// "use client"
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+//import { headers } from "next/headers"
 import { usePathname } from 'next/navigation'
 import { LucideIcon } from 'lucide-react'
 
@@ -17,6 +21,8 @@ interface SidebarMenuProps {
 
 export function SidebarMenu({ isCollapsed, items }: SidebarMenuProps) {
   const pathname = usePathname()
+  //const headerObj = await headers();
+  //const pathname = headerObj.get("x-invoke-path") ?? "";
 
   return (
     <nav className="flex-1 p-2 space-y-2">

@@ -1,3 +1,5 @@
+// lib/supabase/middleware.ts
+
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
@@ -47,30 +49,62 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  /* console.log("User in middleware:", user); */
+  //console.log("User in middleware:", user);
+  
+  const userId = data?.claims['sub']; 
+  const userEmail = data?.claims['email'];  
+  //console.log("User ID:", userId);
+
+  // Call RPC with a named parameter matching the function signature
+  const { data: roles, error: rolesError } = await supabase.rpc('get_user_role', {
+    p_user_id: userId,
+  });
+
+  if (rolesError) {
+    console.error('Errore recupero ruolo utente:', rolesError.message);
+  }
+
+  const userRole = roles && roles.length > 0 ? roles[0].role : 'guest';
+  // console.log("User role:", userRole);
+
+  
+
+  // 👉 setti direttamente sul supabaseResponse
+  // add userid, first_name last_name, email to the cookies other then user-role
+  if(user){
+    supabaseResponse.cookies.set("user-id", user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    }); 
+    supabaseResponse.cookies.set("user-role", userRole, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+    supabaseResponse.cookies.set("user-email", userEmail, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+  }
+
+  //console.log("Set cookie user-role:", response.cookies.get("user-role")?.value);
+  
+
 
   // If you need to make any changes to the response, do so on the
   // supabaseResponse object. Do not create a new response object.
   // If you create a new response object, you will break the auth
   // flow and your users will be logged out.
   
-  // Example: redirecting the user to login if not authenticated
-
-  // Recupero dati utente da claims e query a DB per RBAC
-  /* const userId = data?.claims['sub'];  
-  console.log("User ID:", userId); */
   
-  // Query a tabella 'user_profiles' con RBAC basato su claims
-/*   const { data: profile, error: profileError } = await supabase
-    .from('user_profiles')
-    .select('user_role')
-    .eq('id', userId)
-    .single();
-  if (profileError) {
-    console.error("Error fetching profile:", profileError);
-  } else {
-    console.log("User profile:", profile);
-  }   */
 
   if (
     request.nextUrl.pathname !== "/" &&

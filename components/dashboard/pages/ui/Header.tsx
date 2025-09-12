@@ -19,7 +19,7 @@ export function Header({
       <div className='pt-4 space-y-2 pb-4'>
         <div className='flex items-center justify-between gap-4'>
           <div className='flex items-center gap-2'>
-            <div className='border bg-white text-neutral-900 border-neutral-200 dark:bg-neutral-700 dark:text-white dark:border-neutral-500 rounded-full p-2'>
+            <div className='bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 rounded-full p-2'>
               {icon}
             </div>
             <h1 className='text-3xl font-bold'>{title}</h1>

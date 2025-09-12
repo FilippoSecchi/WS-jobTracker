@@ -1,121 +1,77 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useRouter } from "next/navigation";
+//import { cookies } from "next/headers";
 import { ThemeProvider } from "next-themes";
-import { createClient } from "@/lib/supabase/client"
-import { Sidebar } from '@/components/dashboard/Sidebar'
-import { Navbar } from '@/components/dashboard/Navbar'
-import { UserProfile } from '@/components/dashboard/NavbarProfile'
-import { Message } from '@/components/dashboard/NavbarMessages'
-import { Notification } from '@/components/dashboard/NavbarNotifications'
+import { createClient } from "@/lib/supabase/server";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import { UserProfile } from "@/components/dashboard/NavbarProfile";
+import { Message } from "@/components/dashboard/NavbarMessages";
+import { Notification } from "@/components/dashboard/NavbarNotifications";
+import { injectUserToChildren } from "@/lib/injectUser";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {  
-  const router = useRouter();
-  const supabase = createClient()
+export default async function DashboardLayout({ children }: DashboardLayoutProps) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [user, setUser] = useState<UserProfile | null>(null)
+  let userProfile: UserProfile | null = null;
 
-  const notifications: Notification[] = [
-    { id: 1, message: 'Nuovo messaggio da cliente', time: '5 min fa' },
-    { id: 2, message: 'Aggiornamento sistema completato', time: '1 ora fa' },
-  ]
+  if (user) {
+    // query profilo
+    const { data: userProfileData } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
 
-  const messages: Message[] = [
-    { id: 1, from: 'Cliente ABC', message: 'Quando sarà pronto il progetto?', time: '10 min fa' },
-    { id: 2, from: 'Team Dev', message: 'Review codice completata', time: '30 min fa' },
-  ]
+    // query ruolo (via rpc)
+    const { data: roles } = await supabase.rpc("get_user_role", {
+      p_user_id: user.id,
+    });
 
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          const userId = session.user.id
-          /* console.log("Utente autenticato:", userId) */
+    const userRole = roles && roles.length > 0 ? roles[0].role : "ospite";
 
-          // recupero profilo da user_profiles
-          const { data: userProfileData, error: userProfileError } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', userId)
-            .single()
-
-          if (userProfileError) {
-            console.error('Errore recupero profilo utente:', userProfileError.message)
-            return
-          }
-
-          if (userProfileData) {
-            const avatar = userProfileData.avatar_url || ''
-
-            setUser({
-              first_name: userProfileData.first_name || '',
-              last_name: userProfileData.last_name || '',
-              email: userProfileData.email,
-              avatar,
-            })
-          }
-        } else {
-          console.log("Utente non autenticato")
-          router.push("/auth/login")
-          setUser(null)
-        }
-      }
-    )
-
-    return () => {
-      authListener.subscription.unsubscribe()
-    }
-  }, [router, supabase])
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    router.push("/auth/login");
+    userProfile = {
+      id: user.id,
+      first_name: userProfileData?.first_name ?? "",
+      last_name: userProfileData?.last_name ?? "",
+      email: userProfileData?.email ?? user.email,
+      user_role: userRole,
+      avatar: userProfileData?.avatar_url ?? "",
+    };
   }
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed)
+  const notifications: Notification[] = [
+    { id: 1, message: "Nuovo messaggio da cliente", time: "5 min fa" },
+    { id: 2, message: "Aggiornamento sistema completato", time: "1 ora fa" },
+  ];
+
+  const messages: Message[] = [
+    { id: 1, from: "Cliente ABC", message: "Quando sarà pronto il progetto?", time: "10 min fa" },
+    { id: 2, from: "Team Dev", message: "Review codice completata", time: "30 min fa" },
+  ];
+  
+  // clona tutti i children aggiungendo user
+  const childrenWithUser = injectUserToChildren(children, userProfile);
+  //console.log(userProfile);
+  //console.log(children);
+  if (Array.isArray(childrenWithUser) && childrenWithUser.length > 0 && childrenWithUser[0]?.props) {
+    console.log('Layout data', childrenWithUser[0].props.user);
+  } else if (childrenWithUser && typeof childrenWithUser === 'object' && 'props' in childrenWithUser) {
+    // If childrenWithUser is a single ReactElement
+    console.log('Layout single element data', (childrenWithUser as React.ReactElement<{ user?: UserProfile }>).props.user);
   }
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <div className="h-screen flex bg-background">
-        {/* Sidebar */}
-        <Sidebar
-          isCollapsed={sidebarCollapsed}
-          companyName="WS Job Tracker"
-          companyLogo="WS"
-        />
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Top Navbar */}
-          <Navbar
-            isCollapsed={sidebarCollapsed}
-            onToggleSidebar={toggleSidebar}
-            user={user ?? { first_name: '', last_name: '', email: '', avatar: '' }}
-            messages={messages}
-            notifications={notifications}
-            onLogout={handleLogout}
-          />
-
-          {/* Main Content */}
-          <main className="flex-1 overflow-auto p-6 bg-background">
-            {children}
-          </main>
-        </div>
-      </div>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <DashboardShell
+        user={userProfile ?? { id: "", last_name: "", email: "", avatar: "" }}
+        messages={messages}
+        notifications={notifications}
+      >        
+        {childrenWithUser}
+      </DashboardShell>
     </ThemeProvider>
-  )
+  );
 }

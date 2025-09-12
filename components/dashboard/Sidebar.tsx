@@ -86,7 +86,7 @@ const mainNavItems: MenuItem[] = [
 
 const bottomNavItems: MenuItem[] = [
   {
-    title: 'Impostazioni',
+    title: 'Settings',
     href: '/dashboard/settings',
     icon: Settings,
   },

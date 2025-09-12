@@ -1,6 +1,10 @@
+// components/sidebar/SidebarFooter.tsx
+// "use client"
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+// import { headers } from "next/headers"
 import { usePathname } from 'next/navigation'
 import { MenuItem } from './SidebarMenu'
 
@@ -11,6 +15,8 @@ interface SidebarFooterProps {
 
 export function SidebarFooter({ isCollapsed, items }: SidebarFooterProps) {
   const pathname = usePathname()
+  //const headerObj = await headers();
+  //const pathname = headerObj.get("x-invoke-path") ?? "";
 
   return (
     <div className="p-2 border-t space-y-2">
