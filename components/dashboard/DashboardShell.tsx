@@ -17,6 +17,8 @@ interface DashboardShellProps {
 export default function DashboardShell({ user, messages, notifications, children }: DashboardShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  console.log('DashboardShell User', user);
+
   return (
     <div className="h-screen flex bg-background">
       <Sidebar isCollapsed={isCollapsed} companyName="WS Job Tracker" companyLogo="WS" />

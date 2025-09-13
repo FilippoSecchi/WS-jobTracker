@@ -56,12 +56,12 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   const childrenWithUser = injectUserToChildren(children, userProfile);
   //console.log(userProfile);
   //console.log(children);
-  if (Array.isArray(childrenWithUser) && childrenWithUser.length > 0 && childrenWithUser[0]?.props) {
+  /* if (Array.isArray(childrenWithUser) && childrenWithUser.length > 0 && childrenWithUser[0]?.props) {
     console.log('Layout data', childrenWithUser[0].props.user);
   } else if (childrenWithUser && typeof childrenWithUser === 'object' && 'props' in childrenWithUser) {
     // If childrenWithUser is a single ReactElement
     console.log('Layout single element data', (childrenWithUser as React.ReactElement<{ user?: UserProfile }>).props.user);
-  }
+  } */
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
