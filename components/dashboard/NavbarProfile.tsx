@@ -11,12 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { logoutAction } from "@/app/actions/logout";
 
 export interface UserProfile {
-  id: string;
+  //id: string;
   first_name?: string;
   last_name: string;
   email: string;
@@ -62,7 +62,7 @@ export default function NavbarProfile({ user }: NavbarProfileProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">
+          <Link href="/dashboard/profile/settings">
             <Settings className="mr-2 h-4 w-4" />
             Impostazioni
           </Link>

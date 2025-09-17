@@ -18,11 +18,12 @@ export interface Message {
   time: string
 }
 
-interface NavbarMessagesProps {
-  messages: Message[]
-}
+const messages: Message[] = [
+  { id: 1, from: "Cliente ABC", message: "Quando sarà pronto il progetto?", time: "10 min fa" },
+  { id: 2, from: "Team Dev", message: "Review codice completata", time: "30 min fa" },
+];
 
-export function NavbarMessages({ messages }: NavbarMessagesProps) {
+export function NavbarMessages() {
   const hasNewMessages = messages.length > 0
 
   return (

@@ -16,7 +16,7 @@ import UtentiTab from '@/components/dashboard/pages/configurations/UtentiTabs';
 import FrontSiteTab from '@/components/dashboard/pages/configurations/FrontSiteTab';
 import WebAppTab from '@/components/dashboard/pages/configurations/WebAppTab';
 import PwaTab from '@/components/dashboard/pages/configurations/PwaTab';
-import RolesTab from '@/components/dashboard/pages/configurations/RolesTab';
+import RbacTab from '@/components/dashboard/pages/configurations/RbacTab';
 
 
 const contentTabs = [
@@ -27,8 +27,8 @@ const contentTabs = [
   },
   {
     id: "roles",
-    label: "Ruoli e Permessi",
-    content: <RolesTab />,
+    label: "RBAC",
+    content: <RbacTab />,
   },
   {
     id: "front-site",
@@ -86,7 +86,7 @@ export default async function ConfigurationsPage() {
       {/* Header */}
       <Header
         title="Configurazioni"
-        description="Configura le impostazioni della tua agenzia, sito web, app e molto altro."
+        description="Configura i settaggi generali dell'intero ecosistema. Gestisci le preferenze e le impostazioni dell'applicazione, del sito web, dell'app mobile e della web app desktop. Imposta notifiche personalizzate per ricevere aggiornamenti importanti sulle attività di lavoro, gestisci gli utenti con ruoli e permessi specifici, ottimizza l'esperienza dell'utente attraverso la configurazione delle preferenze del sito web, personalizza il design dell'app mobile e della web app desktop, ottieni feedback dagli utenti tramite messaggi e molto altro."
         icon={<Cog className="h-5 w-5" />}
         actions={[
           <InviteDialog key="invite" />, // Client-side dialog with its own state

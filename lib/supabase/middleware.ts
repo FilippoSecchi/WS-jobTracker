@@ -51,48 +51,100 @@ export async function updateSession(request: NextRequest) {
 
   //console.log("User in middleware:", user);
   
+  const sessionId = data?.claims['session_id']; 
   const userId = data?.claims['sub']; 
-  const userEmail = data?.claims['email'];  
+  const userAuth = data?.claims['aud']; 
+  const userEmail = data?.claims['email'];
+  const userEmailVerified = data?.claims?.user_metadata['email_verified'];   
   //console.log("User ID:", userId);
 
   // Call RPC with a named parameter matching the function signature
   const { data: roles, error: rolesError } = await supabase.rpc('get_user_role', {
     p_user_id: userId,
   });
+  //console.log("Roles:", roles);
 
   if (rolesError) {
     console.error('Errore recupero ruolo utente:', rolesError.message);
   }
 
   const userRole = roles && roles.length > 0 ? roles[0].role : 'guest';
-  // console.log("User role:", userRole);
+  //console.log("User role:", userRole);
+  const roleID = roles && roles.length > 0 ? roles[0].role_id : '';
+  //console.log("Role ID:", roleID);
 
   
 
   // 👉 setti direttamente sul supabaseResponse
   // add userid, first_name last_name, email to the cookies other then user-role
   if(user){
-    supabaseResponse.cookies.set("user-id", user.id, {
+    supabaseResponse.cookies.set("session-id", sessionId ?? "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+    supabaseResponse.cookies.set("user-id", userId ?? "", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
       path: "/",
       maxAge: 60 * 60, // 1 ora
     }); 
-    supabaseResponse.cookies.set("user-role", userRole, {
+    supabaseResponse.cookies.set(
+      "user-auth",
+      Array.isArray(userAuth) ? userAuth.join(",") : userAuth ?? "",
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60, // 1 ora
+      }
+    );
+    supabaseResponse.cookies.set("role-id", roleID ?? "", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
       path: "/",
       maxAge: 60 * 60, // 1 ora
     });
-    supabaseResponse.cookies.set("user-email", userEmail, {
+    supabaseResponse.cookies.set("user-role", userRole ?? "", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
       path: "/",
       maxAge: 60 * 60, // 1 ora
     });
+    supabaseResponse.cookies.set("user-email", userEmail ?? "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+    supabaseResponse.cookies.set("user-email-verified", userEmailVerified?.toString() ?? "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+    /* supabaseResponse.cookies.set("user-first-name", userFirstName, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    });
+    supabaseResponse.cookies.set("user-last-name", userLastName, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60, // 1 ora
+    }); */
   }
 
   //console.log("Set cookie user-role:", response.cookies.get("user-role")?.value);

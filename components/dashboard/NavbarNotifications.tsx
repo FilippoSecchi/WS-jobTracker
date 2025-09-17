@@ -16,11 +16,12 @@ export interface Notification {
   time: string
 }
 
-interface NavbarNotificationsProps {
-  notifications: Notification[]
-}
+const notifications: Notification[] = [
+  { id: 1, message: "Nuovo messaggio da cliente", time: "5 min fa" },
+  { id: 2, message: "Aggiornamento sistema completato", time: "1 ora fa" },
+];
 
-export function NavbarNotifications({ notifications }: NavbarNotificationsProps) {
+export function NavbarNotifications() {
   const hasNewNotifications = notifications.length > 0
 
   return (

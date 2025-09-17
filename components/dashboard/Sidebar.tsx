@@ -7,17 +7,17 @@ import {
   Users,
   Settings,
   BarChart3,
-  FileText,
-  Calendar,
   HelpCircle,
   Cog,
   Headset,
   Code,
   FilePen,
   Clock,
-  UserCog,
   Handshake,
-  UserLock,
+  ShieldUser,
+  UserPlus,
+  HandPlatter,
+  CalendarDays,
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -27,6 +27,11 @@ interface SidebarProps {
 }
 
 const mainNavItems: MenuItem[] = [
+  {
+    title: 'test',
+    href: '/dashboard/test',
+    icon: Code,
+  },
   {
     title: 'Dashboard',
     href: '/dashboard',
@@ -38,19 +43,14 @@ const mainNavItems: MenuItem[] = [
     icon: BarChart3,
   },
   {
-    title: 'test',
-    href: '/dashboard/test',
-    icon: Code,
-  },
-  {
     title: 'Collaboratori',
     href: '/dashboard/staff',
-    icon: UserCog,
+    icon: ShieldUser,
   },
   {
     title: 'Candidati',
     href: '/dashboard/candidates',
-    icon: UserLock,
+    icon: UserPlus,
   },
   {
     title: 'Workers',
@@ -65,7 +65,7 @@ const mainNavItems: MenuItem[] = [
   {
     title: 'Servizi',
     href: '/dashboard/services',
-    icon: FileText,
+    icon: HandPlatter,
   },
   {
     title: 'Ore lavorate',
@@ -75,7 +75,7 @@ const mainNavItems: MenuItem[] = [
   {
     title: 'Calendario',
     href: '/dashboard/calendar',
-    icon: Calendar,
+    icon: CalendarDays,
   },
   {
     title: 'Quiz',

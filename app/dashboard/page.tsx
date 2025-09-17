@@ -4,20 +4,38 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
+import { Progress } from '@/components/ui/progress';
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import {
   Users,
   TrendingUp,
   DollarSign,
   Activity,
   ArrowUpRight,
-  ArrowDownRight, UserPlus, Headset
+  ArrowDownRight, UserPlus, Headset,
+  Building,
+  Briefcase,
+  Calendar
 } from 'lucide-react'
 import Header from '@/components/dashboard/pages/ui/Header'
 import Link from 'next/link'
 import PageBreadcrumb from '@/components/dashboard/pages/ui/PageBreadcrumb';
 
 export default function DashboardPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dialogOpen, setDialogOpen] = useState(false);
   const [due, setDue] = useState("")
 
@@ -123,20 +141,6 @@ export default function DashboardPage() {
     },
   ]
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800'
-      case 'created':
-        return 'bg-blue-100 text-blue-800'
-      case 'updated':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'sent':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const getProjectStatusColor = (status: string) => {
     switch (status) {
@@ -150,6 +154,137 @@ export default function DashboardPage() {
         return 'bg-gray-100 text-gray-800'
     }
   }
+
+  // 
+
+  
+  // Sample data for charts
+  const servicesData = [
+    { month: 'Gen', servizi: 4 },
+    { month: 'Feb', servizi: 7 },
+    { month: 'Mar', servizi: 5 },
+    { month: 'Apr', servizi: 10 },
+    { month: 'Mag', servizi: 8 },
+    { month: 'Giu', servizi: 12 },
+    { month: 'Lug', servizi: 15 }
+  ];
+
+  const workerDistributionData = [
+    { name: 'Cuochi', value: 18 },
+    { name: 'Camerieri', value: 32 },
+    { name: 'Baristi', value: 12 },
+    { name: 'Altro', value: 8 }
+  ];
+
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#6366F1'];
+
+  const serviceStatusData = [
+    { name: 'Pianificato', value: 15 },
+    { name: 'In Corso', value: 8 },
+    { name: 'Completato', value: 25 },
+    { name: 'Annullato', value: 2 }
+  ];
+
+  const STATUS_COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F43F5E'];
+
+  // Upcoming services data
+  const upcomingServices = [
+    {
+      id: 1,
+      client: 'Hotel Belvedere',
+      serviceType: 'Catering Matrimonio',
+      date: '2025-05-10T14:00:00',
+      workerCount: 8,
+      location: 'Milano'
+    },
+    {
+      id: 2,
+      client: 'Ristorante Da Marco',
+      serviceType: 'Servizio Bar',
+      date: '2025-05-12T18:30:00',
+      workerCount: 4,
+      location: 'Roma'
+    },
+    {
+      id: 3,
+      client: 'Villa Rosa',
+      serviceType: 'Evento Aziendale',
+      date: '2025-05-15T09:00:00',
+      workerCount: 12,
+      location: 'Firenze'
+    }
+  ];
+
+  // Recent services data
+  const recentServices = [
+    {
+      id: 1,
+      client: 'Grand Hotel',
+      serviceType: 'Catering Conferenza',
+      date: '2025-05-04',
+      status: 'Completato',
+      revenue: 3200
+    },
+    {
+      id: 2,
+      client: 'Tenuta Bianchi',
+      serviceType: 'Matrimonio',
+      date: '2025-05-03',
+      status: 'Completato',
+      revenue: 5500
+    },
+    {
+      id: 3,
+      client: 'Azienda Tech Spa',
+      serviceType: 'Aperitivo Aziendale',
+      date: '2025-05-02',
+      status: 'Completato',
+      revenue: 1800
+    },
+    {
+      id: 4,
+      client: 'Hotel Splendid',
+      serviceType: 'Gala Dinner',
+      date: '2025-05-01',
+      status: 'Completato',
+      revenue: 4200
+    }
+  ];
+
+  // Format date
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    };
+    return new Date(dateString).toLocaleString('it-IT', options);
+  };
+
+  const formatDateOnly = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric'
+    };
+    return new Date(dateString).toLocaleString('it-IT', options);
+  };
+
+  // Get status color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Pianificato':
+        return 'bg-blue-100 text-blue-800';
+      case 'In Corso':
+        return 'bg-purple-100 text-purple-800';
+      case 'Completato':
+        return 'bg-green-100 text-green-800';
+      case 'Annullato':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   useEffect(() => {
     setDue(new Date(projects[0].dueDate).toLocaleDateString("it-IT"))
@@ -184,6 +319,62 @@ export default function DashboardPage() {
         ]}
       />
 
+
+
+      {/* Stats Cards */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-2'>
+        <Card className='stat-card'>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Servizi Totali
+            </CardTitle>
+            <Briefcase className='h-4 w-4 text-muted-foreground' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>42</div>
+            <p className='text-xs text-muted-foreground'>
+              +15% rispetto al mese scorso
+            </p>
+          </CardContent>
+        </Card>
+        <Card className='stat-card yellow'>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Servizi Pianificati
+            </CardTitle>
+            <Calendar className='h-4 w-4 text-muted-foreground' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>12</div>
+            <p className='text-xs text-muted-foreground'>
+              3 in arrivo questa settimana
+            </p>
+          </CardContent>
+        </Card>
+        <Card className='stat-card info'>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Lavoratori Attivi
+            </CardTitle>
+            <Users className='h-4 w-4 text-muted-foreground' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>70</div>
+            <Progress value={70} className='h-2 mt-2' />
+          </CardContent>
+        </Card>
+        <Card className='stat-card success'>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Clienti</CardTitle>
+            <Building className='h-4 w-4 text-muted-foreground' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>24</div>
+            <p className='text-xs text-muted-foreground'>3 nuovi questo mese</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
@@ -213,6 +404,221 @@ export default function DashboardPage() {
             </Card>
           )
         })}
+      </div>
+
+      
+
+      {/* Charts Section */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 py-2'>
+        {/* First chart - Area chart for Services */}
+        <Card className='col-span-1'>
+          <CardHeader>
+            <CardTitle>Servizi nel Tempo</CardTitle>
+            <CardDescription>Servizi mensili realizzati</CardDescription>
+          </CardHeader>
+          <CardContent className='h-80'>
+            <ResponsiveContainer width='100%' height='100%'>
+              <AreaChart
+                data={servicesData}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis dataKey='month' />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type='monotone'
+                  dataKey='servizi'
+                  stroke='#3B82F6'
+                  fill='#93C5FD'
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Second column with two smaller charts */}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {/* Pie chart for worker distribution */}
+          <Card className='col-span-1'>
+            <CardHeader>
+              <CardTitle>Distribuzione Lavoratori</CardTitle>
+              <CardDescription>Per ruolo lavorativo</CardDescription>
+            </CardHeader>
+            <CardContent className='h-52'>
+              <ResponsiveContainer width='100%' height='100%'>
+                <PieChart>
+                  <Pie
+                    data={workerDistributionData}
+                    cx='50%'
+                    cy='50%'
+                    innerRadius={60}
+                    outerRadius={80}
+                    fill='#8884d8'
+                    dataKey='value'
+                    label={({ name }) =>
+                      `${name}`
+                    }
+                    /* label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    } */
+                  >
+                    {workerDistributionData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Bar chart for service status */}
+          <Card className='col-span-1'>
+            <CardHeader>
+              <CardTitle>Stato Servizi</CardTitle>
+              <CardDescription>Distribuzione attuale</CardDescription>
+            </CardHeader>
+            <CardContent className='h-52'>
+              <ResponsiveContainer width='100%' height='100%'>
+                <BarChart
+                  data={serviceStatusData}
+                  layout='vertical'
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray='3 3' />
+                  <XAxis type='number' />
+                  <YAxis dataKey='name' type='category' width={80} />
+                  <Tooltip />
+                  <Bar dataKey='value'>
+                    {serviceStatusData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={STATUS_COLORS[index % STATUS_COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Upcoming Services and Recent Services */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 py-2'>
+        <Card>
+          <CardHeader className='pb-3'>
+            <CardTitle>Servizi Imminenti</CardTitle>
+            <CardDescription>
+              I tuoi servizi pianificati per le prossime 2 settimane
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {upcomingServices.length > 0 ? (
+              <div className='space-y-4'>
+                {upcomingServices.map((service) => (
+                  <div
+                    key={service.id}
+                    className='flex items-start justify-between border-b last:border-0 pb-4 last:pb-0'
+                  >
+                    <div className='space-y-1'>
+                      <p className='font-medium'>{service.client}</p>
+                      <p className='text-sm text-muted-foreground'>
+                        {service.serviceType}
+                      </p>
+                      <div className='flex items-center text-xs text-muted-foreground'>
+                        <Calendar className='h-3 w-3 mr-1' />
+                        {formatDate(service.date)}
+                        <span className='mx-2'>•</span>
+                        <Users className='h-3 w-3 mr-1' /> {service.workerCount}{' '}
+                        lavoratori
+                        <span className='mx-2'>•</span>
+                        {service.location}
+                      </div>
+                    </div>
+                    <Button variant='outline' size='sm'>
+                      Dettagli
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className='flex flex-col items-center justify-center py-8 text-center'>
+                <Calendar className='h-12 w-12 text-muted-foreground mb-3' />
+                <p className='text-muted-foreground'>
+                  Nessun servizio imminente.
+                </p>
+              </div>
+            )}
+            <div className='mt-4'>
+              <Button variant='outline' size='sm' className='w-full'>
+                Vedi Tutti i Servizi
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className='pb-3'>
+            <CardTitle>Servizi Recenti</CardTitle>
+            <CardDescription>
+              I tuoi servizi completati recentemente
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {recentServices.length > 0 ? (
+              <div className='space-y-4'>
+                {recentServices.map((service) => (
+                  <div
+                    key={service.id}
+                    className='flex items-start justify-between border-b last:border-0 pb-4 last:pb-0'
+                  >
+                    <div className='space-y-1'>
+                      <p className='font-medium'>{service.client}</p>
+                      <p className='text-sm text-muted-foreground'>
+                        {service.serviceType}
+                      </p>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-xs text-muted-foreground'>
+                          {formatDateOnly(service.date)}
+                        </span>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${getStatusColor(
+                            service.status
+                          )}`}
+                        >
+                          {service.status}
+                        </span>
+                        <span className='text-xs font-medium'>
+                          €{service.revenue}
+                        </span>
+                      </div>
+                    </div>
+                    <Button variant='ghost' size='sm'>
+                      Fattura
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className='flex flex-col items-center justify-center py-8 text-center'>
+                <Briefcase className='h-12 w-12 text-muted-foreground mb-3' />
+                <p className='text-muted-foreground'>
+                  Nessun servizio recente.
+                </p>
+              </div>
+            )}
+            <div className='mt-4'>
+              <Button variant='outline' size='sm' className='w-full'>
+                Vedi Storico Servizi
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
