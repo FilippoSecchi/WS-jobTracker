@@ -1,9 +1,9 @@
-// components/dashboard/pages/configurations/UtentiTab.tsx
+// components/dashboard/pages/settings/UsersTab.tsx
 
-import CollaboratoriTab from '@/components/dashboard/pages/configurations/CollaboratoriTab';
-import ClientiTab from '@/components/dashboard/pages/configurations/ClientiTab';
-import WorkersTab from '@/components/dashboard/pages/configurations/WorkersTab';
-import CandidatiTab from '@/components/dashboard/pages/configurations/CandidatiTab';
+import CollaboratoriTab from './CollaboratoriTab';
+import ClientiTab from './ClientiTab';
+import WorkersTab from './WorkersTab';
+import CandidatiTab from './CandidatiTab';
 import PageInnerTabs from '../ui/PageInnerTabs';
 
 
@@ -34,7 +34,7 @@ const contentTabs = [
   
 
 
-export default function UtentiTab() {
+export default function UsersTab() {
     return (
       <div className="mt-8 mb-8 pb-8">
         {/* Title and description */}

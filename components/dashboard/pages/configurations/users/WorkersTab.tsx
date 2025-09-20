@@ -1,19 +1,18 @@
-// components/dashboard/pages/configurations/ResourcesTab.tsx
+// components/dashboard/pages/configurations/WorkersTab.tsx
 
 'use client'
 
 import { useEffect, useState } from 'react'
-import { resourcesColumns, AppResourcesType } from '@/components/dashboard/pages/configurations/rbac/columns/resourcesCols'
+import { rolesColumns, AppRolesType } from '@/components/dashboard/pages/configurations/rbac/columns/rolesCols'
 import { DataTable } from '@/components/shared/data-table/data-table'
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
-type ResourcesTabProps = {
+type WorkersTabProps = {
   activeTab?: boolean
 }
 
-
-export default function ResourcesTab({ activeTab = false }: ResourcesTabProps) {
-  const [app_roles, setAppRoles] = useState<AppResourcesType[]>([])
+export default function WorkersTab({ activeTab = false }: WorkersTabProps) {
+  const [app_roles, setAppRoles] = useState<AppRolesType[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export default function ResourcesTab({ activeTab = false }: ResourcesTabProps) {
 
   return (
     <>
-      <div className="mt-8 mb-8">
+      <div className="mt-8 mb-0">
         <h2 className="text-xl font-bold mb-4">Gestione Ruoli Applicazione</h2>
         <p>Gestione completa dei ruoli applicazione.</p>
       </div>
@@ -39,10 +38,9 @@ export default function ResourcesTab({ activeTab = false }: ResourcesTabProps) {
               <p>Loading...</p>
             </div>
         ) : (
-          <DataTable columns={resourcesColumns} data={app_roles} />
+          <DataTable columns={rolesColumns} data={app_roles} />
         )}
       </div>
     </>
   )
 }
-

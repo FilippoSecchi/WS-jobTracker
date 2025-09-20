@@ -1,33 +1,32 @@
 // components/dashboard/pages/configurations/FrontSiteTab.tsx
 
-import CollaboratoriTab from '@/components/dashboard/pages/configurations/CollaboratoriTab';
-import ClientiTab from '@/components/dashboard/pages/configurations/ClientiTab';
-import WorkersTab from '@/components/dashboard/pages/configurations/WorkersTab';
-import CandidatiTab from '@/components/dashboard/pages/configurations/CandidatiTab';
 import PageInnerTabs from '../ui/PageInnerTabs';
-
+import StaffTab from './users/StaffTab';
+import ClientsTab from './users/ClientsTab';
+import WorkersTab from './users/WorkersTab';
+import CandidatesTab from './users/CandidatesTab';
 
 
 const contentTabs = [
     {
-    id: "collaboratori",
+    id: "Staff",
     label: "Collaboratori",
-    content: <CollaboratoriTab />,
+    content: <StaffTab activeTab={false} />,
     },
     {
-    id: "clienti",
+    id: "clients",
     label: "Clienti",
-    content: <ClientiTab />,
+    content: <ClientsTab activeTab={false} />,
     },
     {
     id: "workers",
     label: "Workers",
-    content: <WorkersTab />,
+    content: <WorkersTab activeTab={false} />,
     },
     {
-    id: "candidati",
+    id: "candidates",
     label: "Candidati",
-    content: <CandidatiTab />,
+    content: <CandidatesTab activeTab={false} />,
     }
 ];
 

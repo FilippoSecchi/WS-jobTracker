@@ -1,7 +1,7 @@
 // components/dashboard/pages/configurations/RolesTab.tsx
 
-import RolesTab from '@/components/dashboard/pages/configurations/rbac/RolesTab';
 import PageInnerTabs from '../ui/PageInnerTabs';
+import RolesTab from './rbac/RolesTab';
 import ResourcesTab from './rbac/ResourcesTab';
 import ActionsTab from './rbac/ActionsTab';
 import ScopesTab from './rbac/ScopesTab';
@@ -18,22 +18,22 @@ const contentTabs = [
     {
     id: "resources",
     label: "Risorse",
-    content: <ResourcesTab />,
+    content: <ResourcesTab activeTab={false} />,
     },
     {
     id: "actions",
     label: "Azioni",
-    content: <ActionsTab />,
+    content: <ActionsTab activeTab={false} />,
     },
     {
     id: "scopes",
     label: "Scopes",
-    content: <ScopesTab />,
+    content: <ScopesTab activeTab={false} />,
     },
     {
     id: "permessi",
     label: "Permessi",
-    content: <PermissionsTab />,
+    content: <PermissionsTab activeTab={false} />,
     }
 ];
 

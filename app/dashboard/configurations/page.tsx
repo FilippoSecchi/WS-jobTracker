@@ -12,11 +12,11 @@ import PageTabs from '@/components/dashboard/pages/ui/PageTabs';
 import GeneraliTab from '@/components/dashboard/pages/configurations/GeneraliTab';
 import NotificheTab from '@/components/dashboard/pages/configurations/NotificheTab';
 import MessaggiTab from '@/components/dashboard/pages/configurations/MessaggiTab';
-import UtentiTab from '@/components/dashboard/pages/configurations/UtentiTabs';
 import FrontSiteTab from '@/components/dashboard/pages/configurations/FrontSiteTab';
 import WebAppTab from '@/components/dashboard/pages/configurations/WebAppTab';
 import PwaTab from '@/components/dashboard/pages/configurations/PwaTab';
 import RbacTab from '@/components/dashboard/pages/configurations/RbacTab';
+import UsersTabs from '@/components/dashboard/pages/configurations/UsersTabs';
 
 
 const contentTabs = [
@@ -46,17 +46,17 @@ const contentTabs = [
     content: <PwaTab />,
   },
   {
-    id: "utenti",
+    id: "users",
     label: "Utenti",
-    content: <UtentiTab />,
+    content: <UsersTabs />,
   },
   {
-    id: "notifiche",
+    id: "notifications",
     label: "Notifiche",
     content: <NotificheTab />,
   },
   {
-    id: "messaggi",
+    id: "messages",
     label: "Messaggi",
     content: <MessaggiTab />,
   },

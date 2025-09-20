@@ -1,38 +1,41 @@
-// components/dashboard/pages/configurations/FrontSiteTab.tsx
+// components/dashboard/pages/configurations/UsersTabs.tsx
 
-import CollaboratoriTab from './CollaboratoriTab';
-import ClientiTab from './ClientiTab';
-import WorkersTab from './WorkersTab';
-import CandidatiTab from './CandidatiTab';
+
 import PageInnerTabs from '../ui/PageInnerTabs';
+import StaffTab from './users/StaffTab';
+import ClientsTab from './users/ClientsTab';
+import WorkersTab from './users/WorkersTab';
+import CandidatesTab from './users/CandidatesTab';
 
 
 
 const contentTabs = [
     {
-    id: "collaboratori",
+    id: "Staff",
     label: "Collaboratori",
-    content: <CollaboratoriTab />,
+    content: <StaffTab activeTab={false} />,
     },
     {
-    id: "clienti",
+    id: "clients",
     label: "Clienti",
-    content: <ClientiTab />,
+    content: <ClientsTab activeTab={false} />,
     },
     {
     id: "workers",
     label: "Workers",
-    content: <WorkersTab />,
+    content: <WorkersTab activeTab={false} />,
     },
     {
-    id: "candidati",
+    id: "candidates",
     label: "Candidati",
-    content: <CandidatiTab />,
+    content: <CandidatesTab activeTab={false} />,
     }
 ];
 
+  
 
-export default function FrontSiteTab() {
+
+export default function UsersTabs() {
     return (
       <div className="mt-8 mb-8 pb-8">
         {/* Title and description */}

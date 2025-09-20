@@ -32,7 +32,7 @@ export function Header({
             </div>
           )}
         </div>
-        {description && <p className='text-muted-foreground'>{description}</p>}
+        {description && <p className='text-muted-foreground pt-4'>{description}</p>}
       </div>
     </>
   );

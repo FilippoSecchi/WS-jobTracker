@@ -1,7 +1,7 @@
 // components/dashboard/pages/ui/PageTabs.tsx
 "use client";
 
-import { useState, ReactNode, useEffect } from "react";
+import React, { useState, ReactNode, useEffect, isValidElement, cloneElement } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -61,11 +61,17 @@ export default function PageInnerTabs({
         ))}
       </TabsList>
 
-      {tabs.map((tab) => (
-        <TabsContent key={tab.id} value={tab.id}>
-          {tab.content}
-        </TabsContent>
-      ))}
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeTab;
+        const content = isValidElement(tab.content)
+          ? cloneElement(tab.content as React.ReactElement, { activeTab: isActive })
+          : tab.content;
+        return (
+          <TabsContent key={tab.id} value={tab.id}>
+            {content}
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 }
