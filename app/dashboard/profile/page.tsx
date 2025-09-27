@@ -91,7 +91,7 @@ export default async function ProfilePage() {
   
 
   // Read and log cookies on the server (SSR)
-  const userCookiesData = UserCookies();
+  const userCookiesData = await UserCookies();
   console.log('Page - userCookiesData from SSR component:', userCookiesData);
 
   return (

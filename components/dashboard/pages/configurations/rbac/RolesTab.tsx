@@ -17,7 +17,7 @@ export default function RolesTab({ activeTab = false }: RolesTabProps) {
   useEffect(() => {
     if (activeTab && app_roles.length === 0) {
       setLoading(true)
-      fetch('/api/configurations/roles') // Create this API route to fetch roles from the server
+      fetch('/api/configurations/rbac/roles') // Create this API route to fetch roles from the server
         .then(res => res.json())
         .then(data => setAppRoles(data))
         .finally(() => setLoading(false))

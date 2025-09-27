@@ -79,7 +79,7 @@ export default function PageTabs({
     <Tabs
       value={activeTab}
       onValueChange={handleTabChange}
-      className="space-y-4"
+      className="space-y-4 border border-muted dark:border-muted/50 rounded-md p-4 bg-background"
     >
       <TabsList className={cn("grid w-full h-12'", getGridClass())}>
         {tabs.map((tab) => (

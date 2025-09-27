@@ -90,7 +90,7 @@ const contentTabs = [
 
 export default async function SettingsPage() {
   // Read and log cookies on the server (SSR)
-  const userCookiesData = UserCookies();
+  const userCookiesData = await UserCookies();
   console.log('Page userCookiesData from SSR component:', userCookiesData);
 
   

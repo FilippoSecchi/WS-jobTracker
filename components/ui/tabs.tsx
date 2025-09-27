@@ -57,7 +57,7 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("bg-background mx-2 mb-12", className)}
+      className={cn("bg-background mx-0 mb-12", className)}
       {...props}
     />
   )

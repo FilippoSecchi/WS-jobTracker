@@ -26,11 +26,6 @@ const contentTabs = [
     content: <GeneraliTab />,
   },
   {
-    id: "roles",
-    label: "RBAC",
-    content: <RbacTab />,
-  },
-  {
     id: "front-site",
     label: "Sito Web",
     content: <FrontSiteTab />,
@@ -44,6 +39,11 @@ const contentTabs = [
     id: "pwa",
     label: "PWA (mobile)",
     content: <PwaTab />,
+  },
+  {
+    id: "roles",
+    label: "RBAC",
+    content: <RbacTab />,
   },
   {
     id: "users",
